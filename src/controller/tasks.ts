@@ -25,8 +25,8 @@ export const getAllTasks = async (req: Request, res: Response) => {
 }
 
 export const createTask = async (req:Request, res: Response) => {
-    try {
-        req.body.createdBy = req.user.userId
+    req.body.createdBy = req.body.user.userId
+    try { 
         const task: TaskDocument = await Task.create(req.body)
 
         return res.status(StatusCodes.CREATED).json(task)
@@ -34,8 +34,6 @@ export const createTask = async (req:Request, res: Response) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
         console.log(error)
     }
-    console.log(req.user) 
-    
 }
 
 export const getTask  = async (req:Request, res: Response) => {
