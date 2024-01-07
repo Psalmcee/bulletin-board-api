@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { TaskDocument } from "../types/task-interface";
 
-
+//schema provides the structure of each data that is going to be stored in the database
 export const taskSchema = new mongoose.Schema({
     task: {
         type: String,
@@ -12,7 +12,6 @@ export const taskSchema = new mongoose.Schema({
     },
     completed: {
         type: Boolean,
-        //enum: ['TODO', 'INPROGRESS', 'DONE'],
         default: false
       },
     createdBy: {
@@ -22,6 +21,7 @@ export const taskSchema = new mongoose.Schema({
     }
 })
 
+//timestamps provide times at each data schema is created
 taskSchema.set('timestamps', true);
 
 export default mongoose.model<TaskDocument>('Task', taskSchema);

@@ -4,9 +4,10 @@ export const app = express()
 import cors from 'cors'
 import { connectDB } from './db'
 import dotenv from 'dotenv'
-import { authenticate as authenticateUser } from './middlewares'
+import { authenticationMiddleware, errorHandlerMiddleware, notFoundMiddleware } from './middlewares'
+
+
 dotenv.config()
-import path from 'path'
 
 
 const port: string | number = process.env.PORT || 5555
@@ -22,9 +23,11 @@ app.get('/', (req: Request, res: Response) => {
 })
  
 app.use('/auth', authRouter);
-app.use('/tasks',authenticateUser, taskRouter);
+app.use('/tasks', authenticationMiddleware, taskRouter);
 app.use('/password', passwordResetRouter);
 
+app.use(notFoundMiddleware)
+app.use(errorHandlerMiddleware)
 
 const start = async () => {
     await connectDB(process.env.MONGO_URI!)

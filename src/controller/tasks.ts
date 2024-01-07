@@ -14,30 +14,20 @@ declare module 'express-serve-static-core' {
   }
 
 export const getAllTasks = async (req: Request, res: Response) => {
-   try {
     const tasks: TaskDocument[] = await Task.find({ createdBy: req.user.userId })
     
     return res.status(StatusCodes.OK).json({msg: tasks, nbHits: tasks.length})
     
-   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
-   }
 }
 
 export const createTask = async (req:Request, res: Response) => {
-    req.body.createdBy = req.body.user.userId
-    try { 
+    req.body.createdBy = req.user.userId
         const task: TaskDocument = await Task.create(req.body)
 
         return res.status(StatusCodes.CREATED).json(task)
-    } catch (error) {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
-        console.log(error)
-    }
 }
 
 export const getTask  = async (req:Request, res: Response) => {
-    try {
         const {
             user: {userId},
             params: {id: taskId}
@@ -45,13 +35,9 @@ export const getTask  = async (req:Request, res: Response) => {
         const task: TaskDocument | null = await Task.findById({_id: taskId, createdBy: userId })
     
         res.status(200).json({msg: task})
-    } catch (error) {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
-    }
 }
 
 export const updateTask  = async (req:Request, res: Response) => {
-    try {
         const {
             user: {userId},
             body: { description, completed },
@@ -69,9 +55,6 @@ export const updateTask  = async (req:Request, res: Response) => {
         })
     
         res.status(202).json(task)
-    } catch (error) {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
-    }
 }
 
 export const deleteTask  = async (req:Request, res: Response) => {
@@ -79,12 +62,8 @@ export const deleteTask  = async (req:Request, res: Response) => {
         user: {userId},
         params: {id: taskId}
     } = req;
-   try {
      const task = await Task.findByIdAndDelete({createdBy: userId, _id: taskId})
     const allTasks = await Task.find({})
 
      res.status(202).json({deletedTask: task, remainingTasks: allTasks, nbRemainingTasks: allTasks.length})
-   } catch (error) {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
-   }
 }

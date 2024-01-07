@@ -15,9 +15,9 @@ interface User {
 
 export const register = async (req: Request, res: Response) => {
     try {
-        const user: User = await User.create({...req.body})
+        const user: User = await User.create({...req.body})   
         const token = user.createJWT()
-        res.status(StatusCodes.CREATED).send({user: {info: req.body}, token})
+        res.status(StatusCodes.CREATED).send(`<h1>Account registered successfully</h1>`/* {user: req.body, token} */)
         
     } catch (error: any) {
         res.status(StatusCodes.BAD_REQUEST).json(error.message)
@@ -46,5 +46,5 @@ export const login = async (req: Request, res: Response) => {
     
     const token = user.createJWT()
     
-    res.status(StatusCodes.ACCEPTED).send(`<h1>Login successful...</h1>`);
+    res.status(StatusCodes.ACCEPTED).send({msg: `<h1>Login successful...</h1>`, token});
 }

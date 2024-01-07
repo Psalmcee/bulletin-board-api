@@ -41,17 +41,22 @@ const UserSchema = new mongoose.Schema({
     }
 });
 
+//pre save returns the object that was saved and hash the password using bcrypt
  UserSchema.pre('save', async function() {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt)
 });
- 
+
+//schema instance methods are used below to prevent sensitive algorithm from being exposed to the controllers and middlewares 
+
+//createJWT is a method that generates a JWT token for the user. It takes the user's ID and name as input, and returns a JWT token.
 UserSchema.methods.createJWT = function() {
     return jwt.sign({ userId: this._id, name: this.name }, process.env.JWT_SECRET!, {
         expiresIn: process.env.JWT_LIFETIME
     })
 }
 
+//comparePassword is a method that compares a candidate password with the user's password. It takes the candidate password as input, hashes it using bcrypt, and compares it to the user's password. It returns a boolean indicating whether the passwords match.
 UserSchema.methods.comparePassword =  async function (candidatePassword: string) {
     const isMatch = await bcrypt.compare(candidatePassword, this.password)
     return isMatch
