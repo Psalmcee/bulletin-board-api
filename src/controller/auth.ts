@@ -46,5 +46,5 @@ export const login = async (req: Request, res: Response) => {
     
     const token = user.createJWT()
     
-    res.status(StatusCodes.ACCEPTED).send({msg: `<h1>Login successful...</h1>`, token});
+    res.status(StatusCodes.ACCEPTED).send({msg: "Login successful...", token});
 }
