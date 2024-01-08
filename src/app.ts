@@ -9,7 +9,6 @@ import { authenticationMiddleware, errorHandlerMiddleware, notFoundMiddleware } 
 
 dotenv.config()
 
-
 const port: string | number = process.env.PORT || 5555
 
 app.use(express.static('./public'))
@@ -35,6 +34,4 @@ const start = async () => {
     console.log(`server is running on port ${port}...
 🚀@ http://localhost:${port}`)})
 }
-
-
 start()
