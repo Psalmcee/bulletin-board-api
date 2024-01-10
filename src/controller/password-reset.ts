@@ -14,12 +14,9 @@ export const forgotPassword = async (req: Request, res: Response) => {
     user.token = resetToken
     //user.expires = new Date(Date.now() + 3600000)
     await user.save()
-    console.log(user)
-
-    res.send({
-        message: "Password reset link sent to your email",
-        email
-    })
+    console.log(user.name, user.token)
+    
+    res.send("Password reset link sent to your email")
 }
 
 export const getResetToken = async (req: Request, res: Response) => {

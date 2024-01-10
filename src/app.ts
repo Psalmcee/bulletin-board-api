@@ -23,7 +23,7 @@ app.get('/', (req: Request, res: Response) => {
  
 app.use('/auth', authRouter);
 app.use('/tasks', authenticationMiddleware, taskRouter);
-app.use('/password', passwordResetRouter);
+app.use('/account', passwordResetRouter);
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
