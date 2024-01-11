@@ -12,11 +12,9 @@ export const forgotPassword = async (req: Request, res: Response) => {
     }
     const resetToken = jwt.sign({email}, process.env.JWT_SECRET!, {expiresIn: "1h"})
     user.token = resetToken
-    //user.expires = new Date(Date.now() + 3600000)
-    await user.save()
-    console.log(user.name, user.token)
-    
-    res.send("Password reset link sent to your email")
+    //user.expires = new Date(Date.now() + 3600000) //1 hr
+    await user.save()   
+    res.json(user.token)
 }
 
 export const getResetToken = async (req: Request, res: Response) => {
@@ -35,16 +33,19 @@ export const getResetToken = async (req: Request, res: Response) => {
 export const resetPassword = async (req: Request, res: Response) => {
     const { token } = req.params;
     const { password } = req.body;
+
     const user = await User.findOne({ token });
+
     if (!user) {
-        return res.status(404).send({
+        return res.status(400).send({
             message: "Invalid or expired token"
         })
     }
     user.password = await password
     user.token = null;
     await user.save();
-    res.send({
+    
+    res.json({
         message: "Password reset successful",
          user: { user: user.email, id: user._id }
     })
