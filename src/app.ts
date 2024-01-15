@@ -1,6 +1,8 @@
 import express, { Request, Response } from 'express'
 import { authRouter, passwordResetRouter, taskRouter } from './routes'
 export const app = express()
+import path from 'path'
+import { join } from 'path'
 import cors from 'cors'
 import { connectDB } from './db'
 import dotenv from 'dotenv'
@@ -17,10 +19,15 @@ app.use(express.urlencoded({ extended: false}))
 app.use(express.json());
 app.use(cors())
 
+app.set('views', path.join(__dirname, '/views'));
+app.set("views", join(__dirname, "views"));
+app.set('view engine', 'ejs')
+
 app.get('/', (req: Request, res: Response) => {
     res.json({message: `This App message is rendered dynamically using express`})
 })
- 
+
+
 app.use('/auth', authRouter);
 app.use('/tasks', authenticationMiddleware, taskRouter);
 app.use('/account', passwordResetRouter);

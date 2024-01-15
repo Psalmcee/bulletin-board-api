@@ -16,7 +16,8 @@ export const forgotPassword = async (req: Request, res: Response) => {
     //user.expires = new Date(Date.now() + 3600000) //1 hr
     await user.save()   
     res.json(user.token)
-    console.log(`Click <a href="http://localhost:5555/account/reset-password/${user.token}">Here</a> to get your password token`)
+
+    console.log(`Click <a href="http://localhost:5555/account/reset-password/${user.id}/${user.token}">Here</a> to get your password token`)
 
     //sending a mail to the user's email for authorization
     /* const transporter = nodemailer.createTransport({
@@ -50,43 +51,52 @@ export const forgotPassword = async (req: Request, res: Response) => {
 }
 
  export const getResetToken = async (req: Request, res: Response) => {
-    const { token } = req.params;
-    const user = await User.findOne({ token });
+    const {id, token} = req.params;
+    const user = await User.findById({ _id: id });
     if (!user) {
         return res.status(408).send({
-            message: "Invalid or expired token"
+            message: "User not found"
         })
     }
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET!)
-        //console.log(decoded)
-        res.send('reset link clicked Click <a href="http://localhost:3000/reset-password/${token}">Here</a> to reset your password')
-        console.log(`Click <a href="http://localhost:3000/reset-password/${token}">Here</a> to reset your password`)
+        console.log(decoded)
+        res.render('reset-password', {id, token})
+
+        /* res.send('reset link clicked Click <a href="http://localhost:3000/reset-password/${token}">Here</a> to reset your password')
+        console.log(`Click <a href="http://localhost:3000/reset-password/${token}">Here</a> to reset your password`) */
     } catch (error: any) {
         console.log(error.message)
     }
 } 
 
 export const resetPassword = async (req: Request, res: Response) => {
-    const { token } = req.params;
+    const { id, token } = req.params;
     const { password } = req.body;
-   /*  const decoded = jwt.verify(token, process.env.JWT_SECRET!)
-    console.log(decoded) */
 
-    console.log(req.params)
-    const user = await User.findOne({ token });
+    //console.log(req.params)
+    const user = await User.findById({ _id: id });
 
     if (!user) {
         return res.status(400).send({
             message: "Invalid or expired token"
         })
     }
-    user.password = await password
-    user.token = null;
-    await user.save();
+    
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!)
+        console.log(decoded)
+        res.render('reset-password')
+    
+        user.password = await password
+        user.token = null;
+        await user.save();
+    } catch (error) {
+        console.log(error)
+    }
 
-    res.json({
+     res.json({
         message: "Password reset successful",
          user: { user: user.email, id: user._id }
     })
