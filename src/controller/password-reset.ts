@@ -62,10 +62,10 @@ export const forgotPassword = async (req: Request, res: Response) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET!)
         console.log(decoded)
-        res.render('reset-password', {id, token})
+        //res.render('reset-password', {id, token})
 
-        /* res.send('reset link clicked Click <a href="http://localhost:3000/reset-password/${token}">Here</a> to reset your password')
-        console.log(`Click <a href="http://localhost:3000/reset-password/${token}">Here</a> to reset your password`) */
+        /* res.send('reset link clicked Click <a href="http://localhost:3000/reset-password/${token}">Here</a> to reset your password')*/
+        console.log(`Click <a href="http://localhost:3000/reset-password/${id}/${token}">Here</a> to reset your password`) 
     } catch (error: any) {
         console.log(error.message)
     }
