@@ -13,18 +13,17 @@ export const forgotPassword = async (req: Request, res: Response) => {
     }
     const resetToken = jwt.sign({email}, process.env.JWT_SECRET!, {expiresIn: "1h"})
     user.token = resetToken
-    //user.expires = new Date(Date.now() + 3600000) //1 hr
     await user.save()   
     res.json(user.token)
 
-    console.log(`Click <a href="http://localhost:5555/account/reset-password/${user.id}/${user.token}">Here</a> to get your password token`)
+    //console.log(`Click <a href="http://localhost:5555/account/reset-password/${user.id}/${user.token}">Here</a> to get your password token`)
 
     //sending a mail to the user's email for authorization
-    /* const transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-            user: "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-            pass: "XXXXXXXXXXXXXXXXXXXXXXXXXX"
+            user: process.env.EMAIL,
+            pass: process.env.PASSWORD
         },
         tls: {
             rejectUnauthorized: false,
@@ -34,7 +33,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
     })
 
     const mailOptions = {
-        from: "XXXXXXXXXXXXXXXXXXXXXXXXXX",
+        from: process.env.EMAIL,
         to: email,
         subject: "Password Reset",
         text: `Click <a href="http://localhost:5555/account/reset-token/${user.token}">Here</a> to reset your password`
@@ -47,57 +46,55 @@ export const forgotPassword = async (req: Request, res: Response) => {
         } else {
             console.log("Email sent: " + info.response)
         }
-    }) */
+    }) 
 }
 
  export const getResetToken = async (req: Request, res: Response) => {
     const {id, token} = req.params;
-    const user = await User.findById({ _id: id });
-    if (!user) {
-        return res.status(408).send({
-            message: "User not found"
-        })
-    }
+     try {
+         const user = await User.findById({ _id: id });
+         if (!user) {
+             return res.status(408).send({
+                 message: "User not found"
+             })
+         }
 
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!)
-        console.log(decoded)
-        //res.render('reset-password', {id, token})
 
-        /* res.send('reset link clicked Click <a href="http://localhost:3000/reset-password/${token}">Here</a> to reset your password')*/
-        console.log(`Click <a href="http://localhost:3000/reset-password/${id}/${token}">Here</a> to reset your password`) 
-    } catch (error: any) {
+         const decoded = jwt.verify(token, process.env.JWT_SECRET!)
+         res.send(`Verified Click <a href="http://localhost:3000/reset-password/${id}/${token}">Here</a> to change your password`)
+        // console.log(`Click <a href="http://localhost:3000/reset-password/${id}/${token}">Here</a> to reset your password`)
+     } catch (error: any) {
         console.log(error.message)
     }
 } 
 
 export const resetPassword = async (req: Request, res: Response) => {
-    const { id, token } = req.params;
-    const { password } = req.body;
-
-    //console.log(req.params)
-    const user = await User.findById({ _id: id });
-
-    if (!user) {
-        return res.status(400).send({
-            message: "Invalid or expired token"
-        })
-    }
     
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!)
-        console.log(decoded)
-        res.render('reset-password')
-    
+        const { id, token } = req.params;
+        const { password } = req.body;
+
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET!)
+        
+        const user = await User.findById({_id: id});
+
+        if (!user) {
+            return res.status(400).send({
+                message: "Invalid or expired token"
+            })
+        }
+
+
         user.password = await password
         user.token = null;
         await user.save();
+
+
+        res.json({
+            message: "Password reset successful",
+            user: { user: user.email, id: user._id }
+        })
     } catch (error) {
         console.log(error)
     }
-
-     res.json({
-        message: "Password reset successful",
-         user: { user: user.email, id: user._id }
-    })
 }
