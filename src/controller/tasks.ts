@@ -28,33 +28,43 @@ export const createTask = async (req:Request, res: Response) => {
 }
 
 export const getTask  = async (req:Request, res: Response) => {
+       try {
         const {
             user: {userId},
             params: {id: taskId}
         } = req;
+        
         const task: TaskDocument | null = await Task.findById({_id: taskId, createdBy: userId })
     
         res.status(200).json({msg: task})
+       } catch (error: any) {
+        console.log(error.message)
+       }
 }
 
 export const updateTask  = async (req:Request, res: Response) => {
-        const {
-            user: {userId},
-            body: { description, completed },
-            params: {id: taskId}
-        } = req;
-
-        if (description === '' || completed === '') {
-            res.status(StatusCodes.BAD_REQUEST).json({msg: 'Please provide description and completed'})
-            return
-        }
-
-        const task: TaskDocument | null = await Task.findByIdAndUpdate({createdBy: userId, _id: taskId}, req.body, {
-            new: true,
-            runValidators: true
-        })
+        try {
+            const {
+                user: {userId},
+                body: { description, completed },
+                params: {id: taskId}
+            } = req;
     
-        res.status(202).json(task)
+            if (description === '' || completed === '') {
+                res.status(StatusCodes.BAD_REQUEST).json({msg: 'Please provide description and completed'})
+                return
+            }
+    
+            const task: TaskDocument | null = await Task.findByIdAndUpdate({createdBy: userId, _id: taskId}, req.body, {
+                new: true,
+                runValidators: true
+            })
+            res.status(202).json(task)
+        } catch (error: any) {
+            console.log(error.message)
+        }
+    
+        
 }
 
 export const deleteTask  = async (req:Request, res: Response) => {
@@ -67,3 +77,4 @@ export const deleteTask  = async (req:Request, res: Response) => {
 
      res.status(202).json({deletedTask: task, remainingTasks: allTasks, nbRemainingTasks: allTasks.length})
 }
+

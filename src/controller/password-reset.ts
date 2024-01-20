@@ -34,7 +34,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
         from: process.env.EMAIL,
         to: email,
         subject: "Password Reset",
-        html: `Click <a href="http://localhost:5555/v1/api/account/reset-password/${user.id}/${user.token}">Here</a> to change your password.`
+        html: `Click <a href="http://localhost:5555/account/reset-password/${user.id}/${user.token}">Here</a> to change your password.`
     }
 
     transporter.sendMail(mailOptions, (error, info) => {

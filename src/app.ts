@@ -6,7 +6,6 @@ import { connectDB } from './db'
 import dotenv from 'dotenv'
 import { authenticationMiddleware, errorHandlerMiddleware, notFoundMiddleware } from './middlewares'
 
-
 dotenv.config()
 
 const port: string | number = process.env.PORT || 5555
@@ -20,7 +19,6 @@ app.use(cors())
 app.get('/', (req: Request, res: Response) => {
     res.json({message: `This App message is rendered dynamically using express`})
 })
-
 
 app.use('/auth', authRouter);
 app.use('/tasks', authenticationMiddleware, taskRouter);
