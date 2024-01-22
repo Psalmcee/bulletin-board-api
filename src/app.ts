@@ -16,8 +16,30 @@ app.use(express.urlencoded({ extended: false}))
 app.use(express.json());
 app.use(cors())
 
+import http from 'http'
+import { Server } from 'socket.io'
+
+const server = http.createServer(app)
+
+export const io = new Server(server, {
+    cors: {
+        origin: 'http://localhost:3000',
+        methods: ['GET', 'POST']
+    }
+})
+
+io.on('connection', (socket) => {
+    console.log(`User connected: ${socket.id}`)
+
+    socket.on('disconnect', () => {
+        console.log(`User disconnected: ${socket.id}`)
+    })
+})
+
+
+
 app.get('/', (req: Request, res: Response) => {
-    res.json({message: `This App message is rendered dynamically using express`})
+    res.json({message: `Connected to server 👍`})
 })
 
 app.use('/auth', authRouter);
@@ -29,7 +51,7 @@ app.use(errorHandlerMiddleware)
 
 const start = async () => {
     await connectDB(process.env.MONGO_URI!)
-    app.listen(port, () => {
+    server.listen(port, () => {
     console.log(`server is running on port ${port}...
 🚀@ http://localhost:${port}`)})
 }

@@ -77,4 +77,3 @@ export const deleteTask  = async (req:Request, res: Response) => {
 
      res.status(202).json({deletedTask: task, remainingTasks: allTasks, nbRemainingTasks: allTasks.length})
 }
-
