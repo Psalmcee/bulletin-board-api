@@ -31,11 +31,12 @@ export const io = new Server(server, {
 io.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`)
 
-    socket.on('disconnect', () => {
+    /* socket.on('disconnect', () => {
         console.log(`User disconnected: ${socket.id}`)
-    })
+    }) 
+   io.emit('server_connected', 'Connected to server ✔')
+    */
 })
-
 
 
 app.get('/', (req: Request, res: Response) => {
